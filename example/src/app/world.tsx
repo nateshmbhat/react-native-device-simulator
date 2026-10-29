@@ -1,6 +1,6 @@
 import { SymbolView } from 'expo-symbols';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { useDevicePreview } from 'react-native-device-simulator';
+import { useDeviceSimulator } from 'react-native-device-simulator';
 
 import { Card, ValueRow } from '@/components/card';
 import { ResponsiveGrid } from '@/components/responsive-grid';
@@ -39,10 +39,10 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
 
 /** Lets you switch the simulated locale and clock from inside the app. */
 function PreviewControls() {
-  const { settings, controller, isActive } = useDevicePreview();
+  const { settings, controller, isActive } = useDeviceSimulator();
   if (!isActive) return null;
   return (
-    <Card title="Preview controls" caption="useDevicePreview().controller">
+    <Card title="Preview controls" caption="useDeviceSimulator().controller">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
         <Chip label="System" selected={settings.locale == null} onPress={() => controller.setLocale(null)} />
         {languages.map((language) => (

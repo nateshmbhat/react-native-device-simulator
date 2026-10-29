@@ -1,13 +1,13 @@
-export { DevicePreview, type DevicePreviewProps } from './components/DevicePreview';
-export { devicePreview, createDevicePreviewStore, type DevicePreviewController, type SettingsPatch } from './core/store';
+export { DeviceSimulator, type DeviceSimulatorProps } from './components/DeviceSimulator';
+export { deviceSimulator, createDeviceSimulatorStore, type DeviceSimulatorController, type SettingsPatch } from './core/store';
 export { defaultSettings, resolveSimulation, isRTLLocale } from './core/simulation';
 export * from './core/geometry';
 export {
-  useDevicePreview,
-  useDevicePreviewActive,
-  useDevicePreviewLocale,
-  useDevicePreviewSettings,
-  useDevicePreviewSimulation,
+  useDeviceSimulator,
+  useDeviceSimulatorActive,
+  useDeviceSimulatorLocale,
+  useDeviceSimulatorSettings,
+  useDeviceSimulatorSimulation,
   usePreviewScreen,
 } from './context';
 export { getRealDimensions, getRealColorScheme } from './environment';
@@ -18,8 +18,8 @@ export {
   screenshotFileName,
   simulationInfoPlugin,
   summarizeSimulation,
-  type DevicePreviewPlugin,
-  type DevicePreviewPluginContext,
+  type DeviceSimulatorPlugin,
+  type DeviceSimulatorPluginContext,
   type ScreenshotPluginOptions,
   type Screenshot,
   type ScreenshotTarget,

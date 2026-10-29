@@ -5,9 +5,9 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { applyEnvironment, getRealDimensions } from '..';
 import { defaultSettings, resolveSimulation } from '../../core/simulation';
 import { allPresets } from '../../presets';
-import type { DevicePreviewSettings } from '../../types';
+import type { DeviceSimulatorSettings } from '../../types';
 
-function simulation(patch: Partial<DevicePreviewSettings> = {}) {
+function simulation(patch: Partial<DeviceSimulatorSettings> = {}) {
   return resolveSimulation({ ...defaultSettings, ...patch }, allPresets);
 }
 
@@ -26,7 +26,7 @@ describe('applyEnvironment with React hooks', () => {
       return null;
     }
     const sim = simulation({ colorScheme: 'dark', fontScale: 1.3 });
-    // Silent first (as DevicePreview does during render), then notifying.
+    // Silent first (as DeviceSimulator does during render), then notifying.
     applyEnvironment(sim, { silent: true });
     await render(<Probe />);
     expect(seen.at(-1)).toEqual({ width: sim.screenSize.width, height: sim.screenSize.height, scheme: 'dark' });

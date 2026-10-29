@@ -110,7 +110,7 @@ export function useToolbarTheme(): ToolbarPalette {
   return React.useContext(ToolbarThemeContext);
 }
 
-/** The colours handed to plugins (see `DevicePreviewPluginContext.theme`). */
+/** The colours handed to plugins (see `DeviceSimulatorPluginContext.theme`). */
 export function pluginTheme(p: ToolbarPalette) {
   return {
     background: p.background,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useDevicePreviewSettings } from '../../../context';
-import { devicePreview } from '../../../core/store';
+import { useDeviceSimulatorSettings } from '../../../context';
+import { deviceSimulator } from '../../../core/store';
 import type { AccessibilityOverrides } from '../../../types';
 import { Button, Section, SegmentedControl, type SegmentOption } from '../controls';
 import { space, type, useToolbarTheme } from '../theme';
@@ -29,11 +29,11 @@ const toTri = (v: boolean | null): Tri => (v === null ? 'device' : v ? 'on' : 'o
 const fromTri = (v: Tri): boolean | null => (v === 'device' ? null : v === 'on');
 
 function setOverride(key: keyof AccessibilityOverrides, value: boolean | null) {
-  devicePreview.update((s) => ({ accessibility: { ...s.accessibility, [key]: value } }));
+  deviceSimulator.update((s) => ({ accessibility: { ...s.accessibility, [key]: value } }));
 }
 
 export function AccessibilityTab() {
-  const { accessibility } = useDevicePreviewSettings();
+  const { accessibility } = useDeviceSimulatorSettings();
   const p = useToolbarTheme();
   const overridden = ACCESSIBILITY_ITEMS.filter((i) => accessibility[i.key] !== null).length;
   return (
@@ -63,7 +63,7 @@ export function AccessibilityTab() {
           icon="reset"
           label="Use device settings for all"
           onPress={() =>
-            devicePreview.update((s) => ({
+            deviceSimulator.update((s) => ({
               accessibility: Object.fromEntries(Object.keys(s.accessibility).map((k) => [k, null])) as unknown as AccessibilityOverrides,
             }))
           }

@@ -34,7 +34,7 @@ describe('getDeviceOuterSize', () => {
   it('is exactly the screen when the frame is hidden', () => {
     expect(getDeviceOuterSize(iPhone17Pro, 'portrait', iPhone17Pro.portraitSize, false)).toEqual(iPhone17Pro.portraitSize);
     expect(getDeviceOuterSize(iPhone17Pro, 'landscape', { width: 874, height: 402 }, false)).toEqual({ width: 874, height: 402 });
-    // Not simulating: DevicePreview passes the stage size.
+    // Not simulating: DeviceSimulator passes the stage size.
     expect(getDeviceOuterSize(iPhone17Pro, 'portrait', { width: 1234, height: 567 }, false)).toEqual({ width: 1234, height: 567 });
   });
 

@@ -1,6 +1,6 @@
 /**
  * A tiny dictionary for the demo. Real apps would use i18next, Lingui, etc. and
- * feed them `useDevicePreviewLocale() ?? deviceLocale` the same way.
+ * feed them `useDeviceSimulatorLocale() ?? deviceLocale` the same way.
  */
 
 export type Language = 'en' | 'fr' | 'de' | 'es' | 'ja' | 'hi' | 'ar' | 'he';

@@ -1,4 +1,4 @@
-export interface DevicePreviewMetroOptions {
+export interface DeviceSimulatorMetroOptions {
   /**
    * Redirect `react-native-safe-area-context` to a preview-aware version
    * (`SafeAreaProvider`, `SafeAreaView`, `SafeAreaListener` report the
@@ -22,7 +22,7 @@ export interface DevicePreviewMetroOptions {
  * Adds the react-native-device-simulator module redirects to a Metro config,
  * chaining any existing `resolver.resolveRequest`.
  */
-export function withDevicePreview<T extends object>(config: T, options?: DevicePreviewMetroOptions): T;
+export function withDeviceSimulator<T extends object>(config: T, options?: DeviceSimulatorMetroOptions): T;
 
 /** Absolute path of the shims directory. */
 export const SHIMS_DIR: string;

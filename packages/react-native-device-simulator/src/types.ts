@@ -138,7 +138,7 @@ export type StatusBarStyleOverride = 'auto' | 'light-content' | 'dark-content';
  * Everything the user can change. Serializable: this is what gets persisted.
  * `null` values mean "use the real (host) value".
  */
-export interface DevicePreviewSettings {
+export interface DeviceSimulatorSettings {
   /** When false the app renders full-screen as if the preview was not installed. */
   isFrameVisible: boolean;
   /** Whether the simulation is active. False shows the app unmodified (state is kept). */
@@ -193,7 +193,7 @@ export interface ResolvedSimulation {
 }
 
 /** Key/value storage used to persist settings, e.g. AsyncStorage. */
-export interface DevicePreviewStorage {
+export interface DeviceSimulatorStorage {
   getItem(key: string): Promise<string | null> | string | null;
   setItem(key: string, value: string): Promise<void> | void;
 }

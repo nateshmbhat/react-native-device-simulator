@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View } from 'react-native';
 import type { AccessibilityOverrides, EdgeInsets, ResolvedSimulation } from '../types';
 import { copyText } from './clipboard';
-import type { DevicePreviewPlugin, DevicePreviewPluginContext } from './types';
+import type { DeviceSimulatorPlugin, DeviceSimulatorPluginContext } from './types';
 import { KeyValueRow, Notice, PanelButton, PanelSection } from './ui';
 
 /** A serializable summary of what the app currently sees (no frame artwork). */
@@ -120,7 +120,7 @@ export function describeSimulation(simulation: ResolvedSimulation): { title: str
  * area, environment and accessibility overrides) with a "Copy JSON" button,
  * handy for bug reports.
  */
-export function simulationInfoPlugin(options: { title?: string } = {}): DevicePreviewPlugin {
+export function simulationInfoPlugin(options: { title?: string } = {}): DeviceSimulatorPlugin {
   return {
     id: 'simulation-info',
     title: options.title ?? 'Info',
@@ -129,7 +129,7 @@ export function simulationInfoPlugin(options: { title?: string } = {}): DevicePr
   };
 }
 
-export function SimulationInfoPanel({ context }: { context: DevicePreviewPluginContext }) {
+export function SimulationInfoPanel({ context }: { context: DeviceSimulatorPluginContext }) {
   const { simulation, theme } = context;
   const [feedback, setFeedback] = React.useState<{ text: string; error?: boolean } | null>(null);
 

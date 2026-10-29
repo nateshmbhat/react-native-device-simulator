@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Share } from 'react-native';
-import { createDevicePreviewStore } from '../../core/store';
+import { createDeviceSimulatorStore } from '../../core/store';
 import { describeSimulation, simulationInfoPlugin, summarizeSimulation } from '../simulation-info';
-import type { DevicePreviewPluginContext } from '../types';
+import type { DeviceSimulatorPluginContext } from '../types';
 
 // `expo-clipboard` is an optional dependency; tests toggle its API.
 const mockClipboard: { setStringAsync?: (text: string) => Promise<boolean> } = {};
@@ -17,8 +17,8 @@ const theme = {
   border: '#333',
 };
 
-function makeContext(configure?: (store: ReturnType<typeof createDevicePreviewStore>) => void): DevicePreviewPluginContext {
-  const controller = createDevicePreviewStore();
+function makeContext(configure?: (store: ReturnType<typeof createDeviceSimulatorStore>) => void): DeviceSimulatorPluginContext {
+  const controller = createDeviceSimulatorStore();
   configure?.(controller);
   return { controller, settings: controller.getSettings(), simulation: controller.getSimulation(), theme };
 }

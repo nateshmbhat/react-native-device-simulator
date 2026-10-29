@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useDevicePreviewSettings } from '../../../context';
-import { devicePreview } from '../../../core/store';
+import { useDeviceSimulatorSettings } from '../../../context';
+import { deviceSimulator } from '../../../core/store';
 import type { StatusBarStyleOverride } from '../../../types';
 import { Chip, ListItem, Row, SearchInput, Section, SegmentedControl, Stepper } from '../controls';
 import { filterLocales, localeLabel, LOCALES } from '../locales';
@@ -12,7 +12,7 @@ type Scheme = 'system' | 'light' | 'dark';
 type Clock = 'system' | '12' | '24';
 
 export function DisplayTab() {
-  const settings = useDevicePreviewSettings();
+  const settings = useDeviceSimulatorSettings();
   const p = useToolbarTheme();
   const { fontScale } = settings;
   const clock: Clock = settings.use24HourClock === null ? 'system' : settings.use24HourClock ? '24' : '12';
@@ -23,7 +23,7 @@ export function DisplayTab() {
         <SegmentedControl<Scheme>
           accessibilityLabel="Color scheme"
           value={settings.colorScheme ?? 'system'}
-          onChange={(v) => devicePreview.setColorScheme(v === 'system' ? null : v)}
+          onChange={(v) => deviceSimulator.setColorScheme(v === 'system' ? null : v)}
           options={[
             { value: 'system', label: 'System', icon: 'display' },
             { value: 'light', label: 'Light', icon: 'sun' },
@@ -41,14 +41,14 @@ export function DisplayTab() {
         }
       >
         <View style={styles.chips}>
-          <Chip label="System" selected={fontScale === null} onPress={() => devicePreview.setFontScale(null)} />
+          <Chip label="System" selected={fontScale === null} onPress={() => deviceSimulator.setFontScale(null)} />
           {TEXT_SCALE_PRESETS.map((s) => (
             <Chip
               key={s}
               label={textScaleLabel(s)}
               accessibilityLabel={`Text scale ${s}`}
               selected={fontScale !== null && Math.abs(fontScale - s) < 0.001}
-              onPress={() => devicePreview.setFontScale(s)}
+              onPress={() => deviceSimulator.setFontScale(s)}
             />
           ))}
         </View>
@@ -58,8 +58,8 @@ export function DisplayTab() {
             value={textScaleLabel(fontScale ?? 1)}
             canDecrement={(fontScale ?? 1) > TEXT_SCALE_MIN}
             canIncrement={(fontScale ?? 1) < TEXT_SCALE_MAX}
-            onDecrement={() => devicePreview.setFontScale(stepTextScale(fontScale, -1))}
-            onIncrement={() => devicePreview.setFontScale(stepTextScale(fontScale, 1))}
+            onDecrement={() => deviceSimulator.setFontScale(stepTextScale(fontScale, -1))}
+            onIncrement={() => deviceSimulator.setFontScale(stepTextScale(fontScale, 1))}
           />
         </Row>
       </Section>
@@ -70,7 +70,7 @@ export function DisplayTab() {
         <SegmentedControl<Clock>
           accessibilityLabel="Clock format"
           value={clock}
-          onChange={(v) => devicePreview.update({ use24HourClock: v === 'system' ? null : v === '24' })}
+          onChange={(v) => deviceSimulator.update({ use24HourClock: v === 'system' ? null : v === '24' })}
           options={[
             { value: 'system', label: 'System' },
             { value: '12', label: '12-hour' },
@@ -83,7 +83,7 @@ export function DisplayTab() {
         <SegmentedControl<StatusBarStyleOverride>
           accessibilityLabel="Status bar style"
           value={settings.statusBarStyle}
-          onChange={(statusBarStyle) => devicePreview.update({ statusBarStyle })}
+          onChange={(statusBarStyle) => deviceSimulator.update({ statusBarStyle })}
           options={[
             { value: 'auto', label: 'Auto' },
             { value: 'light-content', label: 'Light', accessibilityLabel: 'Light content' },
@@ -114,7 +114,7 @@ function LocalePicker({ locale }: { locale: string | null }) {
       <View style={[styles.localeBox, { borderColor: p.border }]}>
         <ScrollView nestedScrollEnabled style={styles.localeScroll} contentContainerStyle={styles.localeList}>
           {showSystem ? (
-            <ListItem icon="globe" title="System default" selected={locale === null} onPress={() => devicePreview.setLocale(null)} />
+            <ListItem icon="globe" title="System default" selected={locale === null} onPress={() => deviceSimulator.setLocale(null)} />
           ) : null}
           {results.map((l) => (
             <ListItem
@@ -123,7 +123,7 @@ function LocalePicker({ locale }: { locale: string | null }) {
               subtitle={l.tag}
               trailing={l.rtl ? 'RTL' : undefined}
               selected={locale !== null && locale.toLowerCase() === l.tag.toLowerCase()}
-              onPress={() => devicePreview.setLocale(l.tag)}
+              onPress={() => deviceSimulator.setLocale(l.tag)}
             />
           ))}
           {results.length === 0 && !showSystem ? (

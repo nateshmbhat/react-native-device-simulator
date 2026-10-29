@@ -1,6 +1,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { withDevicePreview, SHIMS_DIR } = require('../../../metro') as typeof import('../../../metro');
+const { withDeviceSimulator, SHIMS_DIR } = require('../../../metro') as typeof import('../../../metro');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path') as { join(...parts: string[]): string };
 
@@ -66,8 +66,8 @@ function resolve(
 
 const shim = (file: string) => ({ type: 'sourceFile', filePath: path.join(SHIMS_DIR, file) });
 
-describe('withDevicePreview', () => {
-  const config = withDevicePreview({ projectRoot: '/app', resolver: { sourceExts: ['ts', 'tsx', 'js'] } });
+describe('withDeviceSimulator', () => {
+  const config = withDeviceSimulator({ projectRoot: '/app', resolver: { sourceExts: ['ts', 'tsx', 'js'] } });
 
   it('keeps the rest of the config', () => {
     expect(config.projectRoot).toBe('/app');
@@ -90,7 +90,7 @@ describe('withDevicePreview', () => {
     });
 
     it('fails like the original when the package is not installed', () => {
-      const missing = withDevicePreview({ resolver: { resolveRequest: () => { throw new Error('Unable to resolve'); } } });
+      const missing = withDeviceSimulator({ resolver: { resolveRequest: () => { throw new Error('Unable to resolve'); } } });
       expect(() => resolve(missing, 'react-native-safe-area-context', 'ios')).toThrow('Unable to resolve');
     });
   });
@@ -155,7 +155,7 @@ describe('withDevicePreview', () => {
 
   describe('options', () => {
     it('can disable each redirect', () => {
-      const off = withDevicePreview({}, { safeArea: false, textScaling: false, keyboardAvoidingView: false });
+      const off = withDeviceSimulator({}, { safeArea: false, textScaling: false, keyboardAvoidingView: false });
       expect(resolve(off, 'react-native-safe-area-context', 'ios')).toEqual({
         type: 'sourceFile',
         filePath: FILES.ios!['react-native-safe-area-context'],
@@ -171,7 +171,7 @@ describe('withDevicePreview', () => {
     });
 
     it('can disable only text scaling', () => {
-      const noText = withDevicePreview({}, { textScaling: false });
+      const noText = withDeviceSimulator({}, { textScaling: false });
       expect(resolve(noText, './Libraries/Text/Text', 'ios', RN_INDEX).type).toBe('sourceFile');
       expect((resolve(noText, './Libraries/Text/Text', 'ios', RN_INDEX) as { filePath: string }).filePath).toBe(
         FILES.ios!['./Libraries/Text/Text'],
@@ -188,23 +188,23 @@ describe('withDevicePreview', () => {
         if (moduleName === 'my-text') return { type: 'sourceFile', filePath: `${NM}/react-native/Libraries/Text/Text.js` };
         return context.resolveRequest(context, moduleName, platform);
       };
-      const chained = withDevicePreview({ resolver: { resolveRequest: custom } });
+      const chained = withDeviceSimulator({ resolver: { resolveRequest: custom } });
       expect(resolve(chained, 'my-text', 'ios')).toEqual(shim('native/Text.ts'));
       expect(resolve(chained, 'react-native-safe-area-context', 'ios')).toEqual(shim('safe-area-context.tsx'));
       expect(calls).toEqual(['my-text', 'react-native-safe-area-context']);
     });
 
     it('passes non-file resolutions through', () => {
-      const empty = withDevicePreview({ resolver: { resolveRequest: () => ({ type: 'empty' }) } });
+      const empty = withDeviceSimulator({ resolver: { resolveRequest: () => ({ type: 'empty' }) } });
       expect(resolve(empty, 'react-native-safe-area-context', 'ios')).toEqual({ type: 'empty' });
     });
 
     it('is not applied twice', () => {
-      expect(withDevicePreview(config)).toBe(config);
+      expect(withDeviceSimulator(config)).toBe(config);
     });
 
     it('handles Windows paths', () => {
-      const win = withDevicePreview({
+      const win = withDeviceSimulator({
         resolver: {
           resolveRequest: () => ({ type: 'sourceFile', filePath: 'C:\\app\\node_modules\\react-native\\Libraries\\Text\\Text.js' }),
         },

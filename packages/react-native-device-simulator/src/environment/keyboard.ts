@@ -1,5 +1,5 @@
 import { Keyboard } from 'react-native';
-import { devicePreview } from '../core/store';
+import { deviceSimulator } from '../core/store';
 import { patchProperty } from './patch';
 
 /** The simulated software keyboard, in simulated screen coordinates. */
@@ -161,8 +161,8 @@ export function installKeyboardPatch(): void {
     dismiss();
     if (!current) return;
     setKeyboardOverride(null);
-    // Keep the toolbar in sync; DevicePreview then applies the same (hidden) state.
-    if (devicePreview.getSettings().keyboardVisible) devicePreview.setKeyboardVisible(false);
+    // Keep the toolbar in sync; DeviceSimulator then applies the same (hidden) state.
+    if (deviceSimulator.getSettings().keyboardVisible) deviceSimulator.setKeyboardVisible(false);
   });
 }
 

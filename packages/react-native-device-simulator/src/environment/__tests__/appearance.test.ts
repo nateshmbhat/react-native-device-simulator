@@ -24,7 +24,7 @@ beforeEach(() => {
     realListeners.forEach((l) => l({ colorScheme: scheme }));
   };
   appearance = require('../appearance');
-  // DevicePreview installs the patches before the app subscribes.
+  // DeviceSimulator installs the patches before the app subscribes.
   appearance.installAppearancePatch();
 });
 

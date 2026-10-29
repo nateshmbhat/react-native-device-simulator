@@ -2,32 +2,32 @@ import { allPresets } from '../presets';
 import type {
   ColorSchemeName,
   DevicePreset,
-  DevicePreviewSettings,
-  DevicePreviewStorage,
+  DeviceSimulatorSettings,
+  DeviceSimulatorStorage,
   Orientation,
   ResolvedSimulation,
 } from '../types';
 import { defaultSettings, resolveSimulation } from './simulation';
 
-export type SettingsPatch = Partial<DevicePreviewSettings>;
-export type SettingsUpdater = SettingsPatch | ((current: DevicePreviewSettings) => SettingsPatch);
+export type SettingsPatch = Partial<DeviceSimulatorSettings>;
+export type SettingsUpdater = SettingsPatch | ((current: DeviceSimulatorSettings) => SettingsPatch);
 
 type Listener = () => void;
 
 /**
  * Programmatic control surface, the equivalent of Flutter's
  * `DevicePreview.controller`. Safe to call from anywhere (event handlers,
- * tests, dev menus). Changes propagate to every mounted `<DevicePreview>`.
+ * tests, dev menus). Changes propagate to every mounted `<DeviceSimulator>`.
  */
-export interface DevicePreviewController {
+export interface DeviceSimulatorController {
   /** Current user settings. */
-  getSettings(): DevicePreviewSettings;
+  getSettings(): DeviceSimulatorSettings;
   /** What the app currently sees (device metrics, overrides). */
   getSimulation(): ResolvedSimulation;
   /** Every device the picker offers (built-ins plus registered ones). */
   getPresets(): readonly DevicePreset[];
   /**
-   * Whether a device is being simulated right now: a `<DevicePreview>` is
+   * Whether a device is being simulated right now: a `<DeviceSimulator>` is
    * mounted and enabled, and the simulation is switched on.
    */
   isActive(): boolean;
@@ -50,7 +50,7 @@ export interface DevicePreviewController {
   reset(): void;
 }
 
-function mergeSettings(base: DevicePreviewSettings, patch: SettingsPatch): DevicePreviewSettings {
+function mergeSettings(base: DeviceSimulatorSettings, patch: SettingsPatch): DeviceSimulatorSettings {
   return {
     ...base,
     ...patch,
@@ -62,22 +62,22 @@ function mergeSettings(base: DevicePreviewSettings, patch: SettingsPatch): Devic
 
 export const STORAGE_KEY = 'react-native-device-simulator/settings/v1';
 
-export interface DevicePreviewStore extends DevicePreviewController {
-  /** Replaces defaults and presets (called by `<DevicePreview>`). */
+export interface DeviceSimulatorStore extends DeviceSimulatorController {
+  /** Replaces defaults and presets (called by `<DeviceSimulator>`). */
   configure(options: { defaults?: SettingsPatch; presets?: readonly DevicePreset[] }): void;
   /** Loads persisted settings, then saves every change to `storage`. */
-  attachStorage(storage: DevicePreviewStorage | null): () => void;
-  /** Called by each mounted, enabled `<DevicePreview>`. Returns the unregister function. */
+  attachStorage(storage: DeviceSimulatorStorage | null): () => void;
+  /** Called by each mounted, enabled `<DeviceSimulator>`. Returns the unregister function. */
   registerHost(): () => void;
-  /** Whether at least one `<DevicePreview>` is mounted and enabled. */
+  /** Whether at least one `<DeviceSimulator>` is mounted and enabled. */
   hasHost(): boolean;
 }
 
-export function createDevicePreviewStore(): DevicePreviewStore {
-  let defaults: DevicePreviewSettings = defaultSettings;
+export function createDeviceSimulatorStore(): DeviceSimulatorStore {
+  let defaults: DeviceSimulatorSettings = defaultSettings;
   let presets: readonly DevicePreset[] = allPresets;
   let registered: DevicePreset[] = [];
-  let settings: DevicePreviewSettings = defaultSettings;
+  let settings: DeviceSimulatorSettings = defaultSettings;
   let simulation: ResolvedSimulation | null = null;
   let simulationKey = '';
   let hosts = 0;
@@ -97,18 +97,18 @@ export function createDevicePreviewStore(): DevicePreviewStore {
 
   // Settings the app does not see: changing them must not create a new
   // simulation object (which would re-render every scaled Text in the app).
-  const simulationInputs = (s: DevicePreviewSettings) => {
+  const simulationInputs = (s: DeviceSimulatorSettings) => {
     const { toolbar: _t, theme: _th, background: _b, isEnabled: _e, isFrameVisible: _f, showSystemUi: _u, ...rest } = s;
     return JSON.stringify(rest);
   };
 
-  const set = (next: DevicePreviewSettings) => {
+  const set = (next: DeviceSimulatorSettings) => {
     if (next === settings) return;
     settings = next;
     emit();
   };
 
-  const store: DevicePreviewStore = {
+  const store: DeviceSimulatorStore = {
     getSettings: () => settings,
     getSimulation() {
       const key = simulationInputs(settings);
@@ -176,7 +176,7 @@ export function createDevicePreviewStore(): DevicePreviewStore {
         // Only adopt new defaults while the user has not changed anything yet.
         if (settings === previousDefaults || settings === defaultSettings) settings = defaults;
       }
-      // Called during render by <DevicePreview>: never notify synchronously
+      // Called during render by <DeviceSimulator>: never notify synchronously
       // (that would update other components mid-render). Subscribers pick the
       // new snapshot up on their next read.
       simulation = null;
@@ -245,4 +245,4 @@ export function createDevicePreviewStore(): DevicePreviewStore {
 }
 
 /** The global controller. */
-export const devicePreview: DevicePreviewStore = createDevicePreviewStore();
+export const deviceSimulator: DeviceSimulatorStore = createDeviceSimulatorStore();

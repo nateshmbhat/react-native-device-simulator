@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useDevicePreviewSettings, useDevicePreviewSimulation } from '../../../context';
+import { useDeviceSimulatorSettings, useDeviceSimulatorSimulation } from '../../../context';
 import { keyboardHeightFor } from '../../../core/geometry';
-import { devicePreview } from '../../../core/store';
+import { deviceSimulator } from '../../../core/store';
 import { CUSTOM_DEVICE_ID } from '../../../presets';
 import type { DevicePreset } from '../../../types';
 import { IconButton, ListItem, SearchInput, Section, SegmentedControl, SwitchRow } from '../controls';
@@ -22,11 +22,11 @@ import {
 import { radius, space, type, useToolbarTheme } from '../theme';
 import { CustomDeviceEditor } from './CustomDeviceEditor';
 
-const selectDevice = (id: string) => devicePreview.setDevice(id);
+const selectDevice = (id: string) => deviceSimulator.setDevice(id);
 
 export function DeviceTab() {
-  const settings = useDevicePreviewSettings();
-  const simulation = useDevicePreviewSimulation();
+  const settings = useDeviceSimulatorSettings();
+  const simulation = useDeviceSimulatorSimulation();
   const p = useToolbarTheme();
   const { preset, orientation, screenSize } = simulation;
   // Desktop windows are never turned on their side.
@@ -56,7 +56,7 @@ export function DeviceTab() {
             icon="rotate"
             size={32}
             iconSize={17}
-            onPress={devicePreview.toggleOrientation}
+            onPress={deviceSimulator.toggleOrientation}
             accessibilityLabel={`Rotate to ${orientation === 'portrait' ? 'landscape' : 'portrait'}`}
           />
         ) : null}
@@ -67,7 +67,7 @@ export function DeviceTab() {
           <SegmentedControl
             accessibilityLabel="Orientation"
             value={orientation}
-            onChange={devicePreview.setOrientation}
+            onChange={deviceSimulator.setOrientation}
             options={[
               { value: 'portrait', label: 'Portrait', icon: 'phone' },
               { value: 'landscape', label: 'Landscape', icon: 'rotate' },
@@ -79,20 +79,20 @@ export function DeviceTab() {
             icon="power"
             label="Simulate device"
             value={settings.isEnabled}
-            onValueChange={devicePreview.setEnabled}
+            onValueChange={deviceSimulator.setEnabled}
           />
           <SwitchRow
             icon="frame"
             label="Device frame"
             value={settings.isFrameVisible}
-            onValueChange={(isFrameVisible) => devicePreview.update({ isFrameVisible })}
+            onValueChange={(isFrameVisible) => deviceSimulator.update({ isFrameVisible })}
           />
           <SwitchRow
             icon="statusBar"
             label="System UI"
             description="Status bar and home indicator"
             value={settings.showSystemUi}
-            onValueChange={(showSystemUi) => devicePreview.update({ showSystemUi })}
+            onValueChange={(showSystemUi) => deviceSimulator.update({ showSystemUi })}
           />
           <SwitchRow
             icon="keyboard"
@@ -100,7 +100,7 @@ export function DeviceTab() {
             description={hasKeyboard ? undefined : 'Not available on this device'}
             value={settings.keyboardVisible && hasKeyboard}
             disabled={!hasKeyboard}
-            onValueChange={devicePreview.setKeyboardVisible}
+            onValueChange={deviceSimulator.setKeyboardVisible}
           />
         </View>
       </Section>

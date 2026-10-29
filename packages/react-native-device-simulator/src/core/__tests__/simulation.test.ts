@@ -1,6 +1,6 @@
 import { fitScale, paddingFor, rotatePadding, rotatedScreenOffset } from '../geometry';
 import { defaultSettings, isRTLLocale, resolveSimulation } from '../simulation';
-import { createDevicePreviewStore } from '../store';
+import { createDeviceSimulatorStore } from '../store';
 import { allPresets, iPhone17Pro, iPhoneSE3rdGen } from '../../presets';
 
 describe('geometry', () => {
@@ -61,7 +61,7 @@ describe('resolveSimulation', () => {
 
 describe('store', () => {
   it('notifies subscribers and recomputes the simulation', () => {
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     const listener = jest.fn();
     store.subscribe(listener);
     store.setDevice(iPhoneSE3rdGen.id);
@@ -72,14 +72,14 @@ describe('store', () => {
   });
 
   it('registers and selects a custom preset object', () => {
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     store.setDevice({ ...iPhoneSE3rdGen, id: 'my-device', name: 'Mine' });
     expect(store.getSimulation().preset.name).toBe('Mine');
     expect(store.getPresets().some((p) => p.id === 'my-device')).toBe(true);
   });
 
   it('merges nested settings', () => {
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     store.update({ accessibility: { ...store.getSettings().accessibility, boldText: true } });
     store.update((s) => ({ accessibility: { ...s.accessibility, grayscale: true } }));
     expect(store.getSettings().accessibility.boldText).toBe(true);
@@ -90,12 +90,12 @@ describe('store', () => {
     const data = new Map<string, string>();
     const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v) };
     const tick = (ms = 0) => new Promise((r) => setTimeout(r, ms));
-    const a = createDevicePreviewStore();
+    const a = createDeviceSimulatorStore();
     a.attachStorage(storage);
     await tick();
     a.setDevice(iPhoneSE3rdGen.id);
     await tick(300);
-    const b = createDevicePreviewStore();
+    const b = createDeviceSimulatorStore();
     b.attachStorage(storage);
     await new Promise((r) => setTimeout(r, 0));
     expect(b.getSettings().deviceId).toBe(iPhoneSE3rdGen.id);
@@ -116,7 +116,7 @@ describe('store lifecycle (review regressions)', () => {
 
   it('keeps changes made while saved settings are loading', async () => {
     const storage = memoryStorage({ deviceId: iPhoneSE3rdGen.id, colorScheme: 'dark' });
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     store.attachStorage(storage);
     store.setOrientation('landscape'); // before the async read resolves
     await tick();
@@ -126,14 +126,14 @@ describe('store lifecycle (review regressions)', () => {
   });
 
   it('applies synchronous storage immediately', () => {
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     store.attachStorage(memoryStorage({ deviceId: iPhoneSE3rdGen.id }, false));
     expect(store.getSettings().deviceId).toBe(iPhoneSE3rdGen.id);
   });
 
   it('flushes a pending save when detached', async () => {
     const storage = memoryStorage();
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     const detach = store.attachStorage(storage);
     await tick();
     store.setColorScheme('dark');
@@ -142,7 +142,7 @@ describe('store lifecycle (review regressions)', () => {
   });
 
   it('is only active while a host is registered', () => {
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     expect(store.isActive()).toBe(false);
     const unregister = store.registerHost();
     expect(store.isActive()).toBe(true);
@@ -156,7 +156,7 @@ describe('store lifecycle (review regressions)', () => {
   });
 
   it('keeps the same simulation object for preview-chrome-only changes', () => {
-    const store = createDevicePreviewStore();
+    const store = createDeviceSimulatorStore();
     const before = store.getSimulation();
     store.update({ theme: 'light', background: 'plain', toolbar: { ...store.getSettings().toolbar, tab: 'display' } });
     expect(store.getSimulation()).toBe(before);

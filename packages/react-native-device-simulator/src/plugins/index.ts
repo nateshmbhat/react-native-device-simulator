@@ -1,4 +1,4 @@
-export type { DevicePreviewPlugin, DevicePreviewPluginContext } from './types';
+export type { DeviceSimulatorPlugin, DeviceSimulatorPluginContext } from './types';
 export {
   screenshotPlugin,
   screenshotFileName,

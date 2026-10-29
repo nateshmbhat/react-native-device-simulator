@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Pattern, RadialGradient, Rect, Stop } from 'react-native-svg';
-import type { ColorSchemeName, DevicePreviewSettings } from '../types';
+import type { ColorSchemeName, DeviceSimulatorSettings } from '../types';
 import { palettes } from './toolbar/theme';
 
 export interface PreviewBackgroundProps {
-  variant: DevicePreviewSettings['background'];
+  variant: DeviceSimulatorSettings['background'];
   theme: ColorSchemeName;
 }
 

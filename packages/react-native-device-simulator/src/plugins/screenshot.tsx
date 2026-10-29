@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import { deviceViewRef, screenViewRef } from '../core/refs';
 import type { Orientation } from '../types';
 import { getCaptureBackend, type Capture, type CaptureBackend } from './capture';
-import type { DevicePreviewPlugin, DevicePreviewPluginContext } from './types';
+import type { DeviceSimulatorPlugin, DeviceSimulatorPluginContext } from './types';
 import { Notice, PanelButton, PanelSection, panelStyles } from './ui';
 
 /** What gets captured: the whole device with its frame, or the app only. */
@@ -51,10 +51,10 @@ export function screenshotFileName(deviceId: string, orientation: Orientation, d
  * optional: without them the tab explains what to install.
  *
  * ```tsx
- * <DevicePreview plugins={[screenshotPlugin()]}>
+ * <DeviceSimulator plugins={[screenshotPlugin()]}>
  * ```
  */
-export function screenshotPlugin(options: ScreenshotPluginOptions = {}): DevicePreviewPlugin {
+export function screenshotPlugin(options: ScreenshotPluginOptions = {}): DeviceSimulatorPlugin {
   return {
     id: 'screenshot',
     title: options.title ?? 'Screenshot',
@@ -70,7 +70,7 @@ export function ScreenshotPanel({
   options = {},
   backend: backendProp,
 }: {
-  context: DevicePreviewPluginContext;
+  context: DeviceSimulatorPluginContext;
   options?: ScreenshotPluginOptions;
   /** Injectable for tests. */
   backend?: CaptureBackend;

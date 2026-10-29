@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import type { DevicePreviewPluginContext } from './types';
+import type { DeviceSimulatorPluginContext } from './types';
 
 /** Small building blocks shared by the built-in plugin panels. */
 
-type Theme = DevicePreviewPluginContext['theme'];
+type Theme = DeviceSimulatorPluginContext['theme'];
 
 export function PanelSection({ title, theme, children }: { title?: string; theme: Theme; children: React.ReactNode }) {
   return (

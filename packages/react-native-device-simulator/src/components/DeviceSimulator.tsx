@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Platform, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
-import { useDevicePreviewSettings, useDevicePreviewSimulation } from '../context';
+import { useDeviceSimulatorSettings, useDeviceSimulatorSimulation } from '../context';
 import { fitScale } from '../core/geometry';
-import { devicePreview, type SettingsPatch } from '../core/store';
+import { deviceSimulator, type SettingsPatch } from '../core/store';
 import { deviceViewRef } from '../core/refs';
 import { applyEnvironment } from '../environment';
 import { useRealColorScheme } from './useRealColorScheme';
 import { useRealFontScale } from './useRealFontScale';
 import { defaultStorage } from '../storage';
-import type { DevicePreset, DevicePreviewStorage, Size } from '../types';
+import type { DevicePreset, DeviceSimulatorStorage, Size } from '../types';
 import { DeviceFrame, getDeviceOuterSize } from './frame/DeviceFrame';
 import { SimulatedScreen } from './SimulatedScreen';
 import { Toolbar } from './toolbar/Toolbar';
@@ -16,9 +16,9 @@ import { useRealWindowSize } from './toolbar/host';
 import { resolveToolbarPlacement, rootDirection } from './toolbar/logic';
 import { palettes } from './toolbar/theme';
 import { PreviewBackground } from './PreviewBackground';
-import type { DevicePreviewPlugin } from '../plugins/types';
+import type { DeviceSimulatorPlugin } from '../plugins/types';
 
-export interface DevicePreviewProps {
+export interface DeviceSimulatorProps {
   /** The app. */
   children: React.ReactNode;
   /**
@@ -34,9 +34,9 @@ export interface DevicePreviewProps {
    * Where settings are persisted. Defaults to `localStorage` on web and to
    * memory elsewhere; pass AsyncStorage to persist on native. `null` disables.
    */
-  storage?: DevicePreviewStorage | null;
+  storage?: DeviceSimulatorStorage | null;
   /** Extra tool panels shown in the toolbar. */
-  plugins?: readonly DevicePreviewPlugin[];
+  plugins?: readonly DeviceSimulatorPlugin[];
   /** Space kept around the device, in logical pixels. */
   padding?: number;
   /** Allows drawing the device larger than its real logical size. */
@@ -49,20 +49,20 @@ export interface DevicePreviewProps {
  * ```tsx
  * export default function RootLayout() {
  *   return (
- *     <DevicePreview>
+ *     <DeviceSimulator>
  *       <Stack />
- *     </DevicePreview>
+ *     </DeviceSimulator>
  *   );
  * }
  * ```
  */
-export function DevicePreview({ enabled = __DEV__, children, ...props }: DevicePreviewProps) {
+export function DeviceSimulator({ enabled = __DEV__, children, ...props }: DeviceSimulatorProps) {
   useWarnWhenEnabledChanges(enabled);
   if (!enabled) return <>{children}</>;
-  return <DevicePreviewHost {...props}>{children}</DevicePreviewHost>;
+  return <DeviceSimulatorHost {...props}>{children}</DeviceSimulatorHost>;
 }
 
-function DevicePreviewHost({
+function DeviceSimulatorHost({
   children,
   devices,
   defaultSettings,
@@ -70,16 +70,16 @@ function DevicePreviewHost({
   plugins = [],
   padding = 24,
   maxScale = 1,
-}: Omit<DevicePreviewProps, 'enabled'>) {
+}: Omit<DeviceSimulatorProps, 'enabled'>) {
   // Configure synchronously so the first render already uses the right devices.
-  React.useState(() => devicePreview.configure({ presets: devices, defaults: defaultSettings }));
+  React.useState(() => deviceSimulator.configure({ presets: devices, defaults: defaultSettings }));
   // Storage is read once, on mount (an inline object must not reload settings on every render).
   const [initialStorage] = React.useState(() => storage);
-  React.useEffect(() => devicePreview.attachStorage(initialStorage), [initialStorage]);
-  React.useLayoutEffect(() => devicePreview.registerHost(), []);
+  React.useEffect(() => deviceSimulator.attachStorage(initialStorage), [initialStorage]);
+  React.useLayoutEffect(() => deviceSimulator.registerHost(), []);
 
-  const settings = useDevicePreviewSettings();
-  const simulation = useDevicePreviewSimulation();
+  const settings = useDeviceSimulatorSettings();
+  const simulation = useDeviceSimulatorSimulation();
   const active = settings.isEnabled;
 
   // Apply during render (silently) so the app's first render already sees the
@@ -95,7 +95,7 @@ function DevicePreviewHost({
   // the registerHost cleanup above (cleanups run in declaration order).
   React.useLayoutEffect(
     () => () => {
-      if (!devicePreview.hasHost()) applyEnvironment(null);
+      if (!deviceSimulator.hasHost()) applyEnvironment(null);
     },
     [],
   );
@@ -200,8 +200,8 @@ function useWarnWhenEnabledChanges(enabled: boolean) {
     if (__DEV__ && enabled !== initial.current && !warned.current) {
       warned.current = true;
       console.warn(
-        '[device-simulator] The `enabled` prop of <DevicePreview> changed after mount, which remounts your app. ' +
-          'Use devicePreview.setEnabled() (or the toolbar) to turn the simulation on and off at runtime.',
+        '[device-simulator] The `enabled` prop of <DeviceSimulator> changed after mount, which remounts your app. ' +
+          'Use deviceSimulator.setEnabled() (or the toolbar) to turn the simulation on and off at runtime.',
       );
     }
   }, [enabled]);

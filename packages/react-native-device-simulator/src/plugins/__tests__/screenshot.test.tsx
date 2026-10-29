@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Image } from 'react-native';
 import { deviceViewRef, screenViewRef, type ViewHandle } from '../../core/refs';
-import { createDevicePreviewStore } from '../../core/store';
+import { createDeviceSimulatorStore } from '../../core/store';
 import type { CaptureBackend } from '../capture-types';
 import { ScreenshotPanel, screenshotFileName, screenshotPlugin } from '../screenshot';
-import type { DevicePreviewPluginContext } from '../types';
+import type { DeviceSimulatorPluginContext } from '../types';
 
 const theme = {
   background: '#000',
@@ -15,8 +15,8 @@ const theme = {
   border: '#333',
 };
 
-function makeContext(): DevicePreviewPluginContext {
-  const controller = createDevicePreviewStore();
+function makeContext(): DeviceSimulatorPluginContext {
+  const controller = createDeviceSimulatorStore();
   return { controller, settings: controller.getSettings(), simulation: controller.getSimulation(), theme };
 }
 

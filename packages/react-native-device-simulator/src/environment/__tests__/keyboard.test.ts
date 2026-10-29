@@ -163,18 +163,18 @@ describe('simulated keyboard', () => {
   });
 
   it('dismiss() hides the simulated keyboard and updates the settings', () => {
-    store.devicePreview.setKeyboardVisible(true);
+    store.deviceSimulator.setKeyboardVisible(true);
     kb.setKeyboardOverride(KB);
     const { names } = record('keyboardWillHide');
     RN.Keyboard.dismiss();
     expect(names()).toEqual(['keyboardWillHide']);
     expect(RN.Keyboard.isVisible()).toBe(false);
-    expect(store.devicePreview.getSettings().keyboardVisible).toBe(false);
+    expect(store.deviceSimulator.getSettings().keyboardVisible).toBe(false);
   });
 
   it('dismiss() leaves the settings alone when no simulated keyboard is shown', () => {
     const listener = jest.fn();
-    store.devicePreview.subscribe(listener);
+    store.deviceSimulator.subscribe(listener);
     RN.Keyboard.dismiss();
     expect(listener).not.toHaveBeenCalled();
   });

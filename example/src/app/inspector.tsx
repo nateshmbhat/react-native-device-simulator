@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { useDevicePreview, useDevicePreviewLocale } from 'react-native-device-simulator';
+import { useDeviceSimulator, useDeviceSimulatorLocale } from 'react-native-device-simulator';
 import { useSafeAreaFrame, useSafeAreaInsets, type EdgeInsets } from 'react-native-safe-area-context';
 
 import { Card, ValueRow } from '@/components/card';
@@ -115,9 +115,9 @@ export default function InspectorScreen() {
   const frame = useSafeAreaFrame();
   const accessibility = useAccessibilityInfo();
   const keyboard = useKeyboard(6);
-  const previewLocale = useDevicePreviewLocale();
+  const previewLocale = useDeviceSimulatorLocale();
   const appLocale = useLocale();
-  const { isActive, simulation } = useDevicePreview();
+  const { isActive, simulation } = useDeviceSimulator();
   const [overlay, setOverlay] = useState(true);
   const columns = window.width >= Breakpoints.medium ? 2 : 1;
 
@@ -181,14 +181,14 @@ export default function InspectorScreen() {
             ))}
           </Card>
 
-          <Card title="Locale" caption="useDevicePreviewLocale()">
-            <ValueRow label="useDevicePreviewLocale()" value={String(previewLocale)} highlight />
+          <Card title="Locale" caption="useDeviceSimulatorLocale()">
+            <ValueRow label="useDeviceSimulatorLocale()" value={String(previewLocale)} highlight />
             <ValueRow label="app locale" value={appLocale.locale} />
             <ValueRow label="direction" value={appLocale.isRTL ? 'rtl' : 'ltr'} />
             <ValueRow label="clock" value={appLocale.hour12 == null ? 'locale default' : appLocale.hour12 ? '12-hour' : '24-hour'} />
           </Card>
 
-          <Card title="Platform" caption="Platform / useDevicePreview()">
+          <Card title="Platform" caption="Platform / useDeviceSimulator()">
             <ValueRow label="Platform.OS" value={Platform.OS} />
             <ValueRow label="Platform.Version" value={String(Platform.Version ?? '—')} />
             <ValueRow label="preview active" value={String(isActive)} />

@@ -1,4 +1,4 @@
-import { isRTLLocale, useDevicePreview, useDevicePreviewLocale } from 'react-native-device-simulator';
+import { isRTLLocale, useDeviceSimulator, useDeviceSimulatorLocale } from 'react-native-device-simulator';
 
 import { languageFor, strings, type Language, type Strings } from '@/i18n/strings';
 
@@ -28,8 +28,8 @@ export interface AppLocale {
  * device, the real device locale otherwise.
  */
 export function useLocale(): AppLocale {
-  const previewLocale = useDevicePreviewLocale();
-  const { settings, isActive } = useDevicePreview();
+  const previewLocale = useDeviceSimulatorLocale();
+  const { settings, isActive } = useDeviceSimulator();
   const raw = previewLocale ?? deviceLocale();
   const language = languageFor(raw);
   const t = strings[language];

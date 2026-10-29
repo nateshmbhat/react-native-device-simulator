@@ -1,12 +1,12 @@
 import { CUSTOM_DEVICE_ID, presetFromCustomDevice } from '../presets';
 import { iPhone17Pro } from '../presets/generated';
-import type { DevicePreset, DevicePreviewSettings, ResolvedSimulation } from '../types';
+import type { DevicePreset, DeviceSimulatorSettings, ResolvedSimulation } from '../types';
 import { keyboardHeightFor, paddingFor, screenSizeFor } from './geometry';
 import { defaultCustomDevice } from '../presets';
 
 export const DEFAULT_DEVICE: DevicePreset = iPhone17Pro;
 
-export const defaultSettings: DevicePreviewSettings = {
+export const defaultSettings: DeviceSimulatorSettings = {
   isEnabled: true,
   isFrameVisible: true,
   deviceId: DEFAULT_DEVICE.id,
@@ -47,14 +47,14 @@ export function findPreset(presets: readonly DevicePreset[], id: string): Device
 }
 
 /** The preset the settings point at. Falls back to the default device for unknown ids. */
-export function resolvePreset(settings: DevicePreviewSettings, presets: readonly DevicePreset[]): DevicePreset {
+export function resolvePreset(settings: DeviceSimulatorSettings, presets: readonly DevicePreset[]): DevicePreset {
   if (settings.deviceId === CUSTOM_DEVICE_ID) return presetFromCustomDevice(settings.customDevice);
   return findPreset(presets, settings.deviceId) ?? presets[0] ?? DEFAULT_DEVICE;
 }
 
 /** Derives what the app sees from the user settings. Pure. */
 export function resolveSimulation(
-  settings: DevicePreviewSettings,
+  settings: DeviceSimulatorSettings,
   presets: readonly DevicePreset[],
 ): ResolvedSimulation {
   const preset = resolvePreset(settings, presets);

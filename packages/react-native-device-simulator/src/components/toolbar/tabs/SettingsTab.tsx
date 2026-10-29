@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { useDevicePreviewSettings } from '../../../context';
-import { devicePreview } from '../../../core/store';
-import type { ColorSchemeName, DevicePreviewSettings, ToolbarPosition } from '../../../types';
+import { useDeviceSimulatorSettings } from '../../../context';
+import { deviceSimulator } from '../../../core/store';
+import type { ColorSchemeName, DeviceSimulatorSettings, ToolbarPosition } from '../../../types';
 import { Button, Section, SegmentedControl } from '../controls';
 import { space, type, useToolbarTheme } from '../theme';
 
-type Background = DevicePreviewSettings['background'];
+type Background = DeviceSimulatorSettings['background'];
 
 export function SettingsTab() {
-  const settings = useDevicePreviewSettings();
+  const settings = useDeviceSimulatorSettings();
   const p = useToolbarTheme();
   return (
     <View>
@@ -16,7 +16,7 @@ export function SettingsTab() {
         <SegmentedControl<ToolbarPosition>
           accessibilityLabel="Toolbar position"
           value={settings.toolbar.position}
-          onChange={(position) => devicePreview.update((s) => ({ toolbar: { ...s.toolbar, position } }))}
+          onChange={(position) => deviceSimulator.update((s) => ({ toolbar: { ...s.toolbar, position } }))}
           options={[
             { value: 'auto', label: 'Auto' },
             { value: 'left', label: 'Left' },
@@ -31,7 +31,7 @@ export function SettingsTab() {
         <SegmentedControl<ColorSchemeName>
           accessibilityLabel="Panel theme"
           value={settings.theme}
-          onChange={(theme) => devicePreview.update({ theme })}
+          onChange={(theme) => deviceSimulator.update({ theme })}
           options={[
             { value: 'dark', label: 'Dark', icon: 'moon' },
             { value: 'light', label: 'Light', icon: 'sun' },
@@ -43,7 +43,7 @@ export function SettingsTab() {
         <SegmentedControl<Background>
           accessibilityLabel="Background"
           value={settings.background}
-          onChange={(background) => devicePreview.update({ background })}
+          onChange={(background) => deviceSimulator.update({ background })}
           options={[
             { value: 'dots', label: 'Dots' },
             { value: 'plain', label: 'Plain' },
@@ -56,7 +56,7 @@ export function SettingsTab() {
         <Text style={[type.small, { color: p.textMuted }]}>
           Restores the default device, display and accessibility settings. Toolbar preferences are kept.
         </Text>
-        <Button variant="danger" icon="reset" label="Reset all settings" onPress={devicePreview.reset} style={styles.reset} />
+        <Button variant="danger" icon="reset" label="Reset all settings" onPress={deviceSimulator.reset} style={styles.reset} />
       </Section>
 
       <View style={[styles.footer, { borderTopColor: p.divider }]}>

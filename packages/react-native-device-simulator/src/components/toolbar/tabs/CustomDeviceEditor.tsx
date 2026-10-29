@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { useDevicePreviewSettings } from '../../../context';
-import { devicePreview } from '../../../core/store';
+import { useDeviceSimulatorSettings } from '../../../context';
+import { deviceSimulator } from '../../../core/store';
 import type { CustomDeviceSpec, DeviceKind, DevicePlatform, EdgeInsets } from '../../../types';
 import { NumberField, SegmentedControl, TextField, type SegmentOption } from '../controls';
 import { radius, space, type, useToolbarTheme } from '../theme';
@@ -23,13 +23,13 @@ const KINDS: readonly SegmentOption<DeviceKind>[] = [
 const INSET_KEYS: readonly (keyof EdgeInsets)[] = ['top', 'bottom', 'left', 'right'];
 
 function updateCustom(patch: Partial<CustomDeviceSpec>) {
-  devicePreview.update((s) => ({ customDevice: { ...s.customDevice, ...patch } }));
+  deviceSimulator.update((s) => ({ customDevice: { ...s.customDevice, ...patch } }));
 }
 
 /** Editor bound to `settings.customDevice`. */
 export function CustomDeviceEditor() {
   const p = useToolbarTheme();
-  const { customDevice: d } = useDevicePreviewSettings();
+  const { customDevice: d } = useDeviceSimulatorSettings();
 
   return (
     <View style={[styles.editor, { backgroundColor: p.surface, borderColor: p.border }]}>

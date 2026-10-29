@@ -14,15 +14,15 @@ packages/react-native-device-simulator/   the library
     types.ts                 public value types (DevicePreset, settings, ...)
     core/geometry.ts         pure maths: rotation rule, fit-to-window scale
     core/simulation.ts       default settings, settings -> ResolvedSimulation (pure)
-    core/store.ts            global controller `devicePreview` (+ persistence)
+    core/store.ts            global controller `deviceSimulator` (+ persistence)
     environment/             overrides of RN globals (Dimensions, Appearance, ...)
-    components/DevicePreview.tsx   root component: stage, scaling, toolbar
+    components/DeviceSimulator.tsx   root component: stage, scaling, toolbar
     components/SimulatedScreen.tsx providers inside the device screen
     components/frame/        device frame rendering (SVG body, mask, system UI)
     components/toolbar/      control panel
     presets/generated/       device catalog, generated from /device-specs
     plugins/                 toolbar plugins (screenshot, ...)
-  metro/                     optional Metro helper `withDevicePreview`
+  metro/                     optional Metro helper `withDeviceSimulator`
 device-specs/               device JSON specs (from flutter_device_preview, MIT)
 scripts/generate-presets.mjs  device-specs -> presets/generated
 example/                    Expo Router app used for development
@@ -30,12 +30,12 @@ example/                    Expo Router app used for development
 
 ## How the simulation works
 
-1. **State.** `devicePreview` (core/store.ts) holds `DevicePreviewSettings` -
+1. **State.** `deviceSimulator` (core/store.ts) holds `DeviceSimulatorSettings` -
    what the user chose. `resolveSimulation()` turns it into a
    `ResolvedSimulation` - what the app sees (screen size in the current
    orientation, pixel ratio, safe area insets, keyboard height, overrides).
-   Components subscribe with `useSyncExternalStore` (`useDevicePreviewSettings`,
-   `useDevicePreviewSimulation`). Never call `devicePreview.getX()` during render
+   Components subscribe with `useSyncExternalStore` (`useDeviceSimulatorSettings`,
+   `useDeviceSimulatorSimulation`). Never call `deviceSimulator.getX()` during render
    without a subscription: the React Compiler memoizes such calls.
 
 2. **Environment overrides** (`environment/`). The JS modules behind RN's
@@ -45,7 +45,7 @@ example/                    Expo Router app used for development
    - `AccessibilityInfo.is*Enabled` / `addEventListener`
    - `Keyboard` events (simulated software keyboard)
    `applyEnvironment(simulation | null)` sets or clears every override.
-   `DevicePreview` applies it silently during render (so the app's first render
+   `DeviceSimulator` applies it silently during render (so the app's first render
    already sees the device), then again with notifications in a layout effect.
    The real host values stay available through `getRealDimensions()` and
    `getRealColorScheme()` - the preview's own UI must use those (or `onLayout`),
@@ -66,7 +66,7 @@ example/                    Expo Router app used for development
 
 - **The app is never remounted** by preview changes (device, orientation,
   frame on/off, simulation on/off, toolbar position). The element path from
-  `DevicePreview` down to `children` must be identical in every mode: hide or
+  `DeviceSimulator` down to `children` must be identical in every mode: hide or
   resize layers with styles, give conditional siblings stable `key`s, never
   wrap `children` conditionally.
 - `enabled={false}` (the default in release builds) renders `children` only and

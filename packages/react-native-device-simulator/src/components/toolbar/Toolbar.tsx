@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, type PressableStateCallbackType } from 'react-native';
-import { useDevicePreviewSettings, useDevicePreviewSimulation } from '../../context';
-import { devicePreview } from '../../core/store';
-import type { DevicePreviewPlugin } from '../../plugins/types';
+import { useDeviceSimulatorSettings, useDeviceSimulatorSimulation } from '../../context';
+import { deviceSimulator } from '../../core/store';
+import type { DeviceSimulatorPlugin } from '../../plugins/types';
 import type { Size } from '../../types';
 import { IconButton, webTitle } from './controls';
 import { getHostInsets } from './host';
@@ -21,7 +21,7 @@ export interface ToolbarProps {
   active: boolean;
   /** Where the panel docks (already resolved from `settings.toolbar.position`). */
   placement: ToolbarPlacement;
-  plugins: readonly DevicePreviewPlugin[];
+  plugins: readonly DeviceSimulatorPlugin[];
   /** Real size of the area the preview occupies. */
   hostSize: Size;
 }
@@ -32,7 +32,7 @@ interface TabDef {
   icon: IconName;
   /** Plugin glyph (emoji / character) shown instead of the icon. */
   glyph?: string;
-  plugin?: DevicePreviewPlugin;
+  plugin?: DeviceSimulatorPlugin;
 }
 
 const BUILT_IN_TABS: readonly TabDef[] = [
@@ -45,8 +45,8 @@ const BUILT_IN_TABS: readonly TabDef[] = [
 /** Above this many tabs the side panel's tab bar shows icons only. */
 const COMPACT_TAB_LIMIT = 4;
 
-const selectTab = (tab: string) => devicePreview.update((s) => ({ toolbar: { ...s.toolbar, tab } }));
-const setToolbarVisible = (visible: boolean) => devicePreview.update((s) => ({ toolbar: { ...s.toolbar, visible } }));
+const selectTab = (tab: string) => deviceSimulator.update((s) => ({ toolbar: { ...s.toolbar, tab } }));
+const setToolbarVisible = (visible: boolean) => deviceSimulator.update((s) => ({ toolbar: { ...s.toolbar, visible } }));
 
 /**
  * The control panel. Docked as a side panel or a bottom bar, collapsed to a
@@ -54,7 +54,7 @@ const setToolbarVisible = (visible: boolean) => devicePreview.update((s) => ({ t
  * that turns it back on.
  */
 export function Toolbar({ active, placement, plugins, hostSize }: ToolbarProps) {
-  const settings = useDevicePreviewSettings();
+  const settings = useDeviceSimulatorSettings();
   const palette = palettes[settings.theme] ?? palettes.dark;
   const tabs = React.useMemo<TabDef[]>(
     () => [
@@ -68,14 +68,14 @@ export function Toolbar({ active, placement, plugins, hostSize }: ToolbarProps) 
   let content: React.ReactNode;
   if (!active) {
     content = (
-      <FloatingHandle side="right" icon="phone" label="Turn device preview on" onPress={() => devicePreview.setEnabled(true)} subtle />
+      <FloatingHandle side="right" icon="phone" label="Turn device simulator on" onPress={() => deviceSimulator.setEnabled(true)} subtle />
     );
   } else if (!settings.toolbar.visible) {
     content = (
       <FloatingHandle
         side={placement}
         icon={placement === 'left' ? 'panelLeft' : placement === 'bottom' ? 'panelBottom' : 'panelRight'}
-        label="Show device preview toolbar"
+        label="Show device simulator toolbar"
         onPress={() => setToolbarVisible(true)}
       />
     );
@@ -95,7 +95,7 @@ function SidePanel({ tabs, current, placement }: { tabs: readonly TabDef[]; curr
   const insets = getHostInsets();
   return (
     <View
-      accessibilityLabel="Device preview toolbar"
+      accessibilityLabel="Device simulator toolbar"
       style={[
         styles.side,
         {
@@ -115,7 +115,7 @@ function SidePanel({ tabs, current, placement }: { tabs: readonly TabDef[]; curr
           <Icon name="phone" size={12} color={p.accentText} strokeWidth={2.2} />
         </View>
         <Text style={[type.title, styles.headerTitle, { color: p.text }]} numberOfLines={1}>
-          Device Preview
+          Device Simulator
           {tabs.length > COMPACT_TAB_LIMIT ? <Text style={{ color: p.textFaint, fontWeight: '400' }}>{`  /  ${current.title}`}</Text> : null}
         </Text>
         <IconButton
@@ -202,11 +202,11 @@ function TabContent({ tab }: { tab: TabDef }) {
   }
 }
 
-function PluginPanel({ plugin }: { plugin: DevicePreviewPlugin }) {
-  const settings = useDevicePreviewSettings();
-  const simulation = useDevicePreviewSimulation();
+function PluginPanel({ plugin }: { plugin: DeviceSimulatorPlugin }) {
+  const settings = useDeviceSimulatorSettings();
+  const simulation = useDeviceSimulatorSimulation();
   const p = useToolbarTheme();
-  return <>{plugin.render({ controller: devicePreview, settings, simulation, theme: pluginTheme(p) })}</>;
+  return <>{plugin.render({ controller: deviceSimulator, settings, simulation, theme: pluginTheme(p) })}</>;
 }
 
 // -----------------------------------------------------------------------------
@@ -214,7 +214,7 @@ function PluginPanel({ plugin }: { plugin: DevicePreviewPlugin }) {
 
 function BottomToolbar({ tabs, current, hostSize }: { tabs: readonly TabDef[]; current: TabDef; hostSize: Size }) {
   const p = useToolbarTheme();
-  const simulation = useDevicePreviewSimulation();
+  const simulation = useDeviceSimulatorSimulation();
   const insets = getHostInsets();
   const [expanded, setExpanded] = React.useState(false);
   // On phone-sized hosts the hide button moves into the sheet header to leave
@@ -233,7 +233,7 @@ function BottomToolbar({ tabs, current, hostSize }: { tabs: readonly TabDef[]; c
 
   return (
     <View
-      accessibilityLabel="Device preview toolbar"
+      accessibilityLabel="Device simulator toolbar"
       style={[
         styles.bottom,
         { backgroundColor: p.background, borderTopColor: p.border, paddingLeft: insets.left, paddingRight: insets.right },
@@ -277,7 +277,7 @@ function BottomToolbar({ tabs, current, hostSize }: { tabs: readonly TabDef[]; c
           <Icon name={expanded && current.id === 'device' ? 'chevronDown' : 'chevronUp'} size={12} color={p.textFaint} />
         </Pressable>
         {simulation.preset.kind !== 'desktop' ? (
-          <IconButton icon="rotate" onPress={devicePreview.toggleOrientation} accessibilityLabel="Rotate device" size={32} />
+          <IconButton icon="rotate" onPress={deviceSimulator.toggleOrientation} accessibilityLabel="Rotate device" size={32} />
         ) : null}
         <View style={styles.flex} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.barTabs, { maxWidth: Math.max(120, hostSize.width - 190) }]} contentContainerStyle={styles.barTabsContent}>

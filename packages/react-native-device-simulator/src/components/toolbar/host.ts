@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { Dimensions, Platform } from 'react-native';
 import { getRealDimensions } from '../../environment';
-import { devicePreview } from '../../core/store';
+import { deviceSimulator } from '../../core/store';
 import type { DevicePreset, EdgeInsets, Size } from '../../types';
 
 type SafeAreaModule = typeof import('react-native-safe-area-context');
@@ -27,7 +27,7 @@ export function getHostInsets(): EdgeInsets {
 
 /** Every device the picker offers, updated when presets are registered. */
 export function useDevicePresets(): readonly DevicePreset[] {
-  return useSyncExternalStore(devicePreview.subscribe, devicePreview.getPresets, devicePreview.getPresets);
+  return useSyncExternalStore(deviceSimulator.subscribe, deviceSimulator.getPresets, deviceSimulator.getPresets);
 }
 
 let windowSnapshot: Size = { width: 0, height: 0 };

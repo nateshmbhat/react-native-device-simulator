@@ -6,8 +6,8 @@
  * ```js
  * // metro.config.js
  * const { getDefaultConfig } = require('expo/metro-config');
- * const { withDevicePreview } = require('react-native-device-simulator/metro');
- * module.exports = withDevicePreview(getDefaultConfig(__dirname));
+ * const { withDeviceSimulator } = require('react-native-device-simulator/metro');
+ * module.exports = withDeviceSimulator(getDefaultConfig(__dirname));
  * ```
  *
  * It swaps a few modules for preview-aware versions (see src/shims). Each
@@ -80,7 +80,7 @@ function isShim(originModulePath) {
  * @param {import('metro-config').InputConfigT | Record<string, any>} config
  * @param {{ safeArea?: boolean, textScaling?: boolean, keyboardAvoidingView?: boolean }} [options]
  */
-function withDevicePreview(config, options) {
+function withDeviceSimulator(config, options) {
   const opts = options || {};
   const safeArea = opts.safeArea !== false;
   const textScaling = opts.textScaling !== false;
@@ -99,7 +99,7 @@ function withDevicePreview(config, options) {
 
   const resolver = (config && config.resolver) || {};
   const upstream = resolver.resolveRequest;
-  if (upstream && upstream.__devicePreview) return config; // Already applied.
+  if (upstream && upstream.__deviceSimulator) return config; // Already applied.
 
   function resolveRequest(context, moduleName, platform) {
     const resolution = upstream
@@ -110,7 +110,7 @@ function withDevicePreview(config, options) {
     const shim = redirectFor(resolution.filePath);
     return shim ? { type: 'sourceFile', filePath: shim } : resolution;
   }
-  Object.defineProperty(resolveRequest, '__devicePreview', { value: true });
+  Object.defineProperty(resolveRequest, '__deviceSimulator', { value: true });
 
   return {
     ...config,
@@ -122,7 +122,7 @@ function withDevicePreview(config, options) {
 }
 
 module.exports = {
-  withDevicePreview,
+  withDeviceSimulator,
   // Exposed for tests and tooling.
   SHIMS_DIR,
 };

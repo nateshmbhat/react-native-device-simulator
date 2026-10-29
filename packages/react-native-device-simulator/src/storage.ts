@@ -1,15 +1,15 @@
 import { Platform } from 'react-native';
-import type { DevicePreviewStorage } from './types';
+import type { DeviceSimulatorStorage } from './types';
 
-let cached: DevicePreviewStorage | null | undefined;
+let cached: DeviceSimulatorStorage | null | undefined;
 
 /** `localStorage` on web; null (in-memory only) elsewhere. Stable across calls. */
-export function defaultStorage(): DevicePreviewStorage | null {
+export function defaultStorage(): DeviceSimulatorStorage | null {
   if (cached === undefined) cached = createDefaultStorage();
   return cached;
 }
 
-function createDefaultStorage(): DevicePreviewStorage | null {
+function createDefaultStorage(): DeviceSimulatorStorage | null {
   if (Platform.OS !== 'web') return null;
   try {
     const ls = (globalThis as { localStorage?: Storage }).localStorage;

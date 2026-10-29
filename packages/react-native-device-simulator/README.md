@@ -139,14 +139,14 @@ safe area and keyboard height. You can also
 - **Screenshots** of the device with its frame, or the screen only, at the
   device's real resolution (`screenshotPlugin()`).
 - **Plugins** that add your own tabs to the toolbar.
-- **Programmatic control** for tests, demos and dev menus (`devicePreview.setDevice(...)`).
+- **Programmatic control** for tests, demos and dev menus (`deviceSimulator.setDevice(...)`).
 - **Persisted settings** (`localStorage` on web, any AsyncStorage-like store on native).
 - **Off in release builds** by default (`enabled={__DEV__}`): nothing is patched or rendered.
 - **A compact toolbar** that moves to the bottom on narrow windows, so you can
-  even use the preview from a phone-sized browser window.
+  even use the simulator from a phone-sized browser window.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nateshmbhat/react-native-device-simulator/main/docs/images/compact-toolbar.png" alt="The preview in a phone-sized browser window, with the toolbar collapsed to a bar at the bottom" width="260">
+  <img src="https://raw.githubusercontent.com/nateshmbhat/react-native-device-simulator/main/docs/images/compact-toolbar.png" alt="The simulator in a phone-sized browser window, with the toolbar collapsed to a bar at the bottom" width="260">
 </p>
 
 ## Quick start
@@ -167,13 +167,13 @@ recommended. Expo Router and React Navigation already use it.
 ```tsx
 // app/_layout.tsx
 import { Stack } from 'expo-router';
-import { DevicePreview } from 'react-native-device-simulator';
+import { DeviceSimulator } from 'react-native-device-simulator';
 
 export default function RootLayout() {
   return (
-    <DevicePreview>
+    <DeviceSimulator>
       <Stack />
-    </DevicePreview>
+    </DeviceSimulator>
   );
 }
 ```
@@ -182,14 +182,14 @@ export default function RootLayout() {
 
 ```tsx
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { DevicePreview } from 'react-native-device-simulator';
+import { DeviceSimulator } from 'react-native-device-simulator';
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <DevicePreview>
+      <DeviceSimulator>
         <Navigation />
-      </DevicePreview>
+      </DeviceSimulator>
     </SafeAreaProvider>
   );
 }
@@ -202,8 +202,8 @@ npx expo start --web
 ```
 
 Web is the fastest way to check many layouts. The toolbar is on the right, or
-at the bottom on small windows. The preview also runs inside your iOS or
-Android app, for example on an iPad simulator previewing phones.
+at the bottom on small windows. It also runs inside your iOS or
+Android app, for example on an iPad simulator showing phone layouts.
 
 ### Recommended: the Metro helper
 
@@ -214,23 +214,23 @@ Some things can't be simulated from JavaScript alone:
 - The OS applies **text scaling and bold text**.
 - On web, react-native-web's `KeyboardAvoidingView` does nothing.
 
-`withDevicePreview` redirects those modules to preview-aware versions. When no
-preview is active, they behave exactly like the originals:
+`withDeviceSimulator` redirects those modules to simulator-aware versions. When no
+device is being simulated, they behave exactly like the originals:
 
 ```js
 // metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
-const { withDevicePreview } = require('react-native-device-simulator/metro');
+const { withDeviceSimulator } = require('react-native-device-simulator/metro');
 
-module.exports = withDevicePreview(getDefaultConfig(__dirname));
+module.exports = withDeviceSimulator(getDefaultConfig(__dirname));
 ```
 
-Options: `withDevicePreview(config, { safeArea, textScaling, keyboardAvoidingView })`.
+Options: `withDeviceSimulator(config, { safeArea, textScaling, keyboardAvoidingView })`.
 All of them default to `true`.
 
 ## API
 
-### `<DevicePreview>` props
+### `<DeviceSimulator>` props
 
 | Prop | Default | Description |
 | --- | --- | --- |
@@ -244,16 +244,16 @@ All of them default to `true`.
 
 ```tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DevicePreview, Devices, screenshotPlugin, simulationInfoPlugin } from 'react-native-device-simulator';
+import { DeviceSimulator, Devices, screenshotPlugin, simulationInfoPlugin } from 'react-native-device-simulator';
 
-<DevicePreview
+<DeviceSimulator
   storage={AsyncStorage}
   devices={[Devices.iPhone17Pro, Devices.iPhoneSE3rdGen, Devices.pixel10, Devices.iPadAir11M4]}
   defaultSettings={{ deviceId: Devices.pixel10.id }}
   plugins={[screenshotPlugin(), simulationInfoPlugin()]}
 >
   <App />
-</DevicePreview>
+</DeviceSimulator>
 ```
 
 <details>
@@ -274,32 +274,32 @@ spec in [`device-specs/`](https://github.com/nateshmbhat/react-native-device-sim
 
 ### Programmatic control
 
-`devicePreview` is a global controller, the equivalent of Flutter's
+`deviceSimulator` is a global controller, the equivalent of Flutter's
 `DevicePreview.controller`. You can use it anywhere, including outside React:
 
 ```ts
-import { devicePreview, Devices } from 'react-native-device-simulator';
+import { deviceSimulator, Devices } from 'react-native-device-simulator';
 
-devicePreview.setDevice(Devices.iPhoneSE3rdGen);
-devicePreview.setOrientation('landscape');
-devicePreview.setColorScheme('dark');
-devicePreview.setFontScale(2);
-devicePreview.setLocale('he-IL');
-devicePreview.setKeyboardVisible(true);
-devicePreview.update({ accessibility: { ...devicePreview.getSettings().accessibility, reduceMotion: true } });
-devicePreview.setEnabled(false); // show the app full-screen, state kept
-devicePreview.reset();
+deviceSimulator.setDevice(Devices.iPhoneSE3rdGen);
+deviceSimulator.setOrientation('landscape');
+deviceSimulator.setColorScheme('dark');
+deviceSimulator.setFontScale(2);
+deviceSimulator.setLocale('he-IL');
+deviceSimulator.setKeyboardVisible(true);
+deviceSimulator.update({ accessibility: { ...deviceSimulator.getSettings().accessibility, reduceMotion: true } });
+deviceSimulator.setEnabled(false); // show the app full-screen, state kept
+deviceSimulator.reset();
 ```
 
 ### Hooks
 
 | Hook | Returns |
 | --- | --- |
-| `useDevicePreview()` | `{ settings, simulation, isActive, controller }` |
-| `useDevicePreviewSettings()` | What the user chose (`DevicePreviewSettings`) |
-| `useDevicePreviewSimulation()` | What the app sees: screen size, insets, pixel ratio, keyboard height, overrides |
-| `useDevicePreviewActive()` | Whether a device is being simulated right now |
-| `useDevicePreviewLocale()` | The simulated locale (BCP-47), or `null` |
+| `useDeviceSimulator()` | `{ settings, simulation, isActive, controller }` |
+| `useDeviceSimulatorSettings()` | What the user chose (`DeviceSimulatorSettings`) |
+| `useDeviceSimulatorSimulation()` | What the app sees: screen size, insets, pixel ratio, keyboard height, overrides |
+| `useDeviceSimulatorActive()` | Whether a device is being simulated right now |
+| `useDeviceSimulatorLocale()` | The simulated locale (BCP-47), or `null` |
 
 `getRealDimensions()` and `getRealColorScheme()` return the host's real values
 when you need them.
@@ -310,13 +310,13 @@ Apps choose their language in many different ways, so the library exposes the
 simulated locale and leaves it to you to apply. Pass it to your i18n library:
 
 ```tsx
-import { useDevicePreviewLocale } from 'react-native-device-simulator';
+import { useDeviceSimulatorLocale } from 'react-native-device-simulator';
 
 function I18nSync() {
-  const previewLocale = useDevicePreviewLocale(); // e.g. 'ar-EG', or null
+  const simulatedLocale = useDeviceSimulatorLocale(); // e.g. 'ar-EG', or null
   useEffect(() => {
-    i18n.changeLanguage(previewLocale ?? getLocales()[0].languageTag);
-  }, [previewLocale]);
+    i18n.changeLanguage(simulatedLocale ?? getLocales()[0].languageTag);
+  }, [simulatedLocale]);
   return null;
 }
 ```
@@ -329,7 +329,7 @@ automatically.
 Any device in the [device spec format](https://github.com/nateshmbhat/react-native-device-simulator/tree/main/device-specs) works:
 
 ```ts
-import { devicePreview, type DevicePreset } from 'react-native-device-simulator';
+import { deviceSimulator, type DevicePreset } from 'react-native-device-simulator';
 
 const kioskTablet: DevicePreset = {
   id: 'acme-kiosk',
@@ -342,7 +342,7 @@ const kioskTablet: DevicePreset = {
   portraitPadding: { top: 24, right: 0, bottom: 0, left: 0 },
 };
 
-devicePreview.registerPreset(kioskTablet); // appears in the picker
+deviceSimulator.registerPreset(kioskTablet); // appears in the picker
 ```
 
 A preset without frame artwork gets a generic frame for its kind.
@@ -352,9 +352,9 @@ A preset without frame artwork gets a generic frame for its kind.
 A plugin adds a tab to the toolbar:
 
 ```tsx
-import type { DevicePreviewPlugin } from 'react-native-device-simulator';
+import type { DeviceSimulatorPlugin } from 'react-native-device-simulator';
 
-const featureFlags: DevicePreviewPlugin = {
+const featureFlags: DeviceSimulatorPlugin = {
   id: 'flags',
   title: 'Flags',
   icon: '⚑',
