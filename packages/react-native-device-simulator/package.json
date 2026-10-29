@@ -1,0 +1,107 @@
+{
+  "name": "react-native-device-simulator",
+  "version": "0.1.0",
+  "description": "Preview your React Native app on any device - iPhone, iPad, Android phones, tablets and foldables - with real frames, safe areas, dark mode, text scale, locales and more. A port of Flutter's device_preview.",
+  "main": "src/index.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "types": "lib/typescript/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/typescript/index.d.ts",
+      "react-native": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./metro": {
+      "types": "./metro/index.d.ts",
+      "default": "./metro/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "files": [
+    "src",
+    "lib",
+    "metro",
+    "README.md",
+    "LICENSE",
+    "!**/__tests__"
+  ],
+  "keywords": [
+    "react-native",
+    "expo",
+    "device-preview",
+    "device-frame",
+    "responsive",
+    "simulator",
+    "react-native-web"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-svg": "*",
+    "react-native-view-shot": "*",
+    "modern-screenshot": "*",
+    "html-to-image": "*",
+    "expo-sharing": "*",
+    "expo-clipboard": "*",
+    "@react-native-clipboard/clipboard": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-safe-area-context": {
+      "optional": true
+    },
+    "react-native-view-shot": {
+      "optional": true
+    },
+    "modern-screenshot": {
+      "optional": true
+    },
+    "html-to-image": {
+      "optional": true
+    },
+    "expo-sharing": {
+      "optional": true
+    },
+    "expo-clipboard": {
+      "optional": true
+    },
+    "@react-native-clipboard/clipboard": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@react-native/jest-preset": "^0.88.1",
+    "@testing-library/react-native": "^14.1.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.5.2",
+    "jest-expo": "~58.0.0",
+    "react-test-renderer": "^19.3.0",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "jest",
+    "build": "rm -rf lib && tsc -p tsconfig.build.json",
+    "prepare": "npm run build"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.test.ts?(x)"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/lib/"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nateshmbhat/react-native-device-simulator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nateshmbhat/react-native-device-simulator/issues"
+  },
+  "homepage": "https://github.com/nateshmbhat/react-native-device-simulator#readme",
+  "sideEffects": true
+}

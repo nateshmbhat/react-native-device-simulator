@@ -1,0 +1,9 @@
+{
+  "name": "react-native-device-simulator-monorepo",
+  "private": true,
+  "workspaces": ["packages/*", "example"],
+  "scripts": {
+    "example": "npm --workspace example run",
+    "lib": "npm --workspace react-native-device-simulator run"
+  }
+}

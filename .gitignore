@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist/
+lib/
+*.log
+.DS_Store
+coverage/
+
+# Local Claude Code config
+/.claude/
