@@ -1,6 +1,6 @@
 {
   "name": "react-native-device-simulator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Preview your React Native app on any device - iPhone, iPad, Android phones, tablets and foldables - with real frames, safe areas, dark mode, text scale, locales and more. A port of Flutter's device_preview.",
   "main": "src/index.ts",
   "react-native": "src/index.ts",

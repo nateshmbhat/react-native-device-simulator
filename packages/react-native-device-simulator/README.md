@@ -20,23 +20,6 @@ A React Native port of Flutter's
 [Quick start](#quick-start) · [Features](#features) · [API](#api) ·
 [How it works](#how-it-works) · [Limitations](#limitations) · [Credits](#credits)
 
-## Why this exists
-
-Flutter developers have had [`device_preview`](https://pub.dev/packages/device_preview)
-by [Aloïs Deniel](https://github.com/aloisdeniel) for years: you wrap the app,
-pick a device, and see it in an accurate frame with that device's dimensions,
-notch, safe areas and system settings.
-
-We looked for the same thing in React Native. There are components that draw
-a device frame around a view (for example
-[`react-native-multidevice-preview`](https://www.npmjs.com/package/react-native-multidevice-preview)),
-but we couldn't find one that does what `device_preview` does: run your real
-app inside accurate device frames while React Native's own APIs
-(`useWindowDimensions`, `useColorScheme`, `Keyboard`, `AccessibilityInfo`,
-safe area insets and so on) report the simulated device, so the app needs no
-changes. This library fills that gap. It ports `device_preview`'s design to
-React Native and uses its device catalog.
-
 ## Features
 
 ### 33 devices with real frames
