@@ -25,6 +25,26 @@ export * from 'react-native-safe-area-context';
 
 const { SafeAreaInsetsContext, SafeAreaFrameContext } = Real;
 
+/**
+ * The real provider, wrapped in React.memo so NativeWind cannot swap it (issue
+ * #5). NativeWind v4 (react-native-css-interop's maybeHijackSafeAreaProvider)
+ * replaces every element whose type's `displayName || name` is
+ * "SafeAreaProvider" with a shim that renders the first such type it saw: the
+ * SafeAreaProvider below, which the app's own <SafeAreaProvider> resolves to.
+ * Rendering the real provider directly would be swapped too and render this
+ * shim again, forever, until the app runs out of memory. Both of NativeWind's
+ * paths do this: its JSX runtime (jsxImportSource) and its Babel plugin, which
+ * rewrites `React.createElement` calls into the same wrapper. A memo object has
+ * neither `name` nor `displayName`, and React renders the wrapped function
+ * itself, not through JSX, so the real provider is never matched. Don't set a
+ * displayName on it.
+ *
+ * The memo's shallow prop comparison never skips a render: its `children` is
+ * an element created anew on every render of SafeAreaProvider below, so it
+ * re-renders whenever that does, exactly as it would without the memo.
+ */
+const RealSafeAreaProvider = React.memo(Real.SafeAreaProvider);
+
 type EdgeMode = 'off' | 'additive' | 'maximum';
 type Simulated = { insets: EdgeInsets; frame: Rect } | null;
 
@@ -48,17 +68,10 @@ function SimulatedSafeAreaContexts({ value, children }: { value: Simulated; chil
 
 export function SafeAreaProvider({ children, initialMetrics, ...props }: Real.SafeAreaProviderProps) {
   const simulated = useSimulatedSafeArea();
-  // Keep React.createElement here, not JSX (issue #5). NativeWind v4's JSX
-  // runtime (react-native-css-interop's maybeHijackSafeAreaProvider) swaps
-  // every JSX element whose type is NAMED "SafeAreaProvider" for a shim that
-  // renders the first such type it saw: this component, which the app's own
-  // <SafeAreaProvider> resolves to. As JSX, the real provider below would be
-  // swapped too and render this component again, forever, until the app runs
-  // out of memory. React.createElement is not wrapped by NativeWind.
-  return React.createElement(
-    Real.SafeAreaProvider,
-    { ...props, initialMetrics: simulated ?? initialMetrics },
-    <SimulatedSafeAreaContexts value={simulated}>{children}</SimulatedSafeAreaContexts>,
+  return (
+    <RealSafeAreaProvider {...props} initialMetrics={simulated ?? initialMetrics}>
+      <SimulatedSafeAreaContexts value={simulated}>{children}</SimulatedSafeAreaContexts>
+    </RealSafeAreaProvider>
   );
 }
 

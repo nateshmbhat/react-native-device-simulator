@@ -1,8 +1,8 @@
 /**
- * Issue #5: with NativeWind v4, every JSX call (this library's source
- * included) goes through react-native-css-interop's JSX runtime, which swaps
- * any component named "SafeAreaProvider" for a shim of the first one it saw.
- * See ./nativewind-jsx.ts for the replica of that runtime used here.
+ * Issue #5: with NativeWind v4, every JSX call and every `React.createElement`
+ * call (this library's source included) goes through react-native-css-interop,
+ * which swaps any component named "SafeAreaProvider" for a shim of the first
+ * one it saw. See ./nativewind-jsx.ts for the replica used here.
  */
 import * as React from 'react';
 import { Text } from 'react-native';
@@ -14,6 +14,7 @@ import { allPresets } from '../../presets';
 import { SafeAreaProvider, useSafeAreaInsets } from '../safe-area-context';
 import { VariableContext, hijack, resetNativeWindReplica } from './nativewind-jsx';
 
+jest.mock('react', () => require('./nativewind-jsx').wrapReact(jest.requireActual('react')));
 jest.mock('react/jsx-runtime', () => require('./nativewind-jsx').wrapJsxRuntime(jest.requireActual('react/jsx-runtime')));
 jest.mock('react/jsx-dev-runtime', () =>
   require('./nativewind-jsx').wrapJsxRuntime(jest.requireActual('react/jsx-dev-runtime')),
@@ -56,6 +57,14 @@ const probe = () => JSON.parse(String(screen.getByTestId('probe').props.children
 beforeEach(() => {
   resetNativeWindReplica();
   childRenders = 0;
+});
+
+describe('the NativeWind replica', () => {
+  it('hijacks React.createElement as well as JSX', async () => {
+    await render(React.createElement(Real.SafeAreaProvider, { initialMetrics: HOST }, <Probe />));
+    expect(hijack.renders).toBe(1);
+    expect(childRenders).toBe(1);
+  });
 });
 
 describe('safe-area-context shim under NativeWind (issue #5)', () => {
