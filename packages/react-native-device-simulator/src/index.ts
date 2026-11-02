@@ -11,7 +11,10 @@ export {
   usePreviewScreen,
 } from './context';
 export { getRealDimensions, getRealColorScheme } from './environment';
-export * as Devices from './presets';
+// `import * as` + `export { }` rather than `export * as`: @react-native/babel-preset
+// (bare React Native) lacks the export-namespace-from transform.
+import * as Devices from './presets';
+export { Devices };
 export { allPresets, CUSTOM_DEVICE_ID, presetFromCustomDevice } from './presets';
 export {
   screenshotPlugin,
