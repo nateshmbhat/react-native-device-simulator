@@ -1,7 +1,7 @@
 /**
- * A replica of the part of NativeWind v4's JSX runtime that hijacks
- * `SafeAreaProvider`, for tests (issue #5). Mirrors react-native-css-interop
- * 0.2.2 (used by nativewind 4.2.x):
+ * A replica of the parts of NativeWind v4 that hijack `SafeAreaProvider`, for
+ * tests (issue #5). Mirrors react-native-css-interop 0.2.2 (used by nativewind
+ * 4.2.x):
  * - src/runtime/wrap-jsx.ts: `wrapJSX` runs every `jsx` / `jsxs` / `jsxDEV`
  *   call through `maybeHijackSafeAreaProvider(type)`.
  * - src/runtime/third-party-libs/react-native-safe-area-context.native.tsx:
@@ -11,22 +11,39 @@
  *   `SafeAreaEnv`, which provides the safe-area CSS variables from
  *   `useSafeAreaInsets()` when the type is the module's `SafeAreaProvider`.
  *
- * NativeWind sets Babel's `jsxImportSource` for every file Metro transforms,
- * including this library's TypeScript source, so the shim's own JSX goes
- * through it too. Tests reproduce that by mocking `react/jsx-runtime` with
- * `wrapJsxRuntime`.
+ * NativeWind's Babel preset (`nativewind/babel` -> `react-native-css-interop/babel`)
+ * applies to every file Metro transforms, this library's TypeScript source
+ * included, and reaches the hijack by two paths:
+ * 1. JSX: it sets `jsxImportSource: "react-native-css-interop"`, whose
+ *    `jsx` / `jsxs` / `jsxDEV` are `wrapJSX(...)`. Tests reproduce it by mocking
+ *    `react/jsx-runtime` and `react/jsx-dev-runtime` with `wrapJsxRuntime`.
+ * 2. `createElement`: src/babel-plugin.ts rewrites `React.createElement`,
+ *    `_react.default.createElement` and a bare `createElement` imported or
+ *    required from "react" into `ReactNativeCSSInterop.createInteropElement`,
+ *    which is `wrapJSX(createElement)` (src/runtime/jsx-runtime.ts), in every
+ *    file outside react/, react-native/, react-native-web/ and
+ *    react-native-css-interop/. Tests reproduce it by mocking `react` with
+ *    `wrapReact`, whose `createElement` goes through the hijack; namespace and
+ *    default imports of React both see it.
  *
  * Differences from the original, all test-only:
  * - `SafeAreaEnv` requires the safe-area shim directly. In an app it requires
  *   `react-native-safe-area-context`, which the Metro helper redirects to the
  *   shim; jest has no such redirect.
  * - `VariableContext` stands in for css-interop's own context.
+ * - The mocked `createElement` is seen by every module, not only files outside
+ *   the excluded folders. Only types named "SafeAreaProvider" are affected.
  * - The shim counts its renders and throws past `LOOP_LIMIT`, so an infinite
  *   render loop fails fast instead of running out of memory.
  */
-import * as React from 'react';
+import type * as ReactTypes from 'react';
 
-type AnyComponent = React.ComponentType<any>;
+// The real `react`, not the mock built by `wrapReact`: css-interop's own files
+// are not rewritten by its Babel plugin, and this module is loaded from inside
+// the `react` mock factory.
+const React: typeof ReactTypes = jest.requireActual('react');
+
+type AnyComponent = ReactTypes.ComponentType<any>;
 type JSXFunction = (type: any, props: any, ...rest: any[]) => unknown;
 
 /** css-interop's VariableContext: CSS variables by name. */
@@ -57,7 +74,7 @@ function maybeHijackSafeAreaProvider(type: any) {
 }
 
 function shimFactory(type: AnyComponent): AnyComponent {
-  function SafeAreaEnv({ children }: React.PropsWithChildren) {
+  function SafeAreaEnv({ children }: ReactTypes.PropsWithChildren) {
     try {
       // Stands in for require('react-native-safe-area-context') under the Metro helper.
       const { useSafeAreaInsets, SafeAreaProvider } = require('../safe-area-context') as typeof import('../safe-area-context');
@@ -80,7 +97,7 @@ function shimFactory(type: AnyComponent): AnyComponent {
     }
   }
 
-  return function SafeAreaProviderShim({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) {
+  return function SafeAreaProviderShim({ children, ...props }: ReactTypes.PropsWithChildren<Record<string, unknown>>) {
     hijack.renders++;
     if (hijack.renders > LOOP_LIMIT) {
       throw new Error(`NativeWind's SafeAreaProvider shim rendered ${hijack.renders} times: infinite render loop`);
@@ -102,4 +119,9 @@ export function wrapJsxRuntime<T extends Record<string, any>>(runtime: T): T {
     if (typeof runtime[key] === 'function') wrapped[key] = wrapJSX(runtime[key]);
   }
   return wrapped as T;
+}
+
+/** `react` with `createElement` rewritten to css-interop's `createInteropElement`, as its Babel plugin does. */
+export function wrapReact<T extends { createElement: (...args: any[]) => unknown }>(react: T): T {
+  return { ...react, createElement: wrapJSX(react.createElement as JSXFunction) };
 }

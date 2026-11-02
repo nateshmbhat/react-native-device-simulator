@@ -56,9 +56,11 @@ example/                    Expo Router app used for development
    so React Navigation, Expo Router and `useSafeAreaInsets` get the simulated
    insets. The native `SafeAreaView` / nested `SafeAreaProvider` measure real
    native insets; the optional Metro helper swaps them for preview-aware
-   versions. The shimmed `SafeAreaProvider` renders the real one with
-   `React.createElement`, not JSX, because NativeWind's JSX runtime replaces
-   any element named `SafeAreaProvider` and would otherwise loop forever.
+   versions. The shimmed `SafeAreaProvider` renders the real one wrapped in
+   `React.memo`: NativeWind (through both its JSX runtime and its Babel plugin's
+   `createElement` rewrite) replaces any element whose type is named
+   `SafeAreaProvider`, which would otherwise loop forever, and a memo wrapper
+   has no name.
 
 4. **Rendering.** The device is rendered at its natural logical size and scaled
    with a single `transform: [{ scale }]` to fit the stage (`fitScale`). The app
