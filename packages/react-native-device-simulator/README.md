@@ -368,8 +368,10 @@ come from `device_preview`'s device specs. For details, see
 ## Platforms
 
 The library runs on web (react-native-web), iOS and Android, with Expo or bare
-React Native. So far it has been checked on Expo web and on an iPad simulator.
-Reports from other setups are welcome.
+React Native. It has been checked on Expo web, on an iPad simulator, and in a
+large React Native 0.86 app (New Architecture, Hermes, `@react-native/babel-preset`)
+on the iOS simulator and an Android emulator. Reports from other setups are
+welcome.
 
 ## Limitations
 
